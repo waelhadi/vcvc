@@ -1,7 +1,7 @@
 import base64, requests
 
 def fetch_key_from_github():
-    url = "https://raw.githubusercontent.com/waelhadi/beko1/main/nasr.txt"  # رابط المفتاح
+    url = "https://raw.githubusercontent.com/waelhadi/art1/main/w1213.txt"  # نفس رابط المفتاح المستخدم للتشفير
     response = requests.get(url)
     if response.status_code == 200:
         return int(response.text.strip())
@@ -13,9 +13,9 @@ def xor_decrypt(data, key):
 
 def decrypt_function(encrypted_parts):
     parts = encrypted_parts
-    key = fetch_key_from_github()  # جلب المفتاح مرة واحدة فقط
+    key = fetch_key_from_github()  # جلب المفتاح مرة واحدة
 
-    for layer in range(10, 0, -1):  # عكس التشفير بدءاً من الطبقة الأخيرة
+    for layer in range(3, 0, -1):  # عكس التشفير بدءاً من الطبقة الأخيرة
         decrypted_parts_layer = []
 
         for part in parts:
@@ -24,7 +24,6 @@ def decrypt_function(encrypted_parts):
             decrypted_part = xor_decrypt(decoded_part, key)
             decrypted_parts_layer.append(decrypted_part)
 
-        # تحديث المتغيرات للطبقة التالية
         parts = decrypted_parts_layer
 
     return ''.join(parts)  # إرجاع الكود الأصلي كنص واحد
