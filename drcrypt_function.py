@@ -1,19 +1,26 @@
-import requests
+import base64
 
-# رابط الملف الذي تريد الوصول إليه
-url = "https://raw.githubusercontent.com/username/repository/branch/path/to/file.py"
+# فك التشفير باستخدام XOR
+def xor_decrypt(data, key):
+    return ''.join(chr(ord(char) ^ key) for char in data)
 
-# إعداد الرأس مع المفتاح
-headers = {
-    "Authorization": "token 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"
-}
+# الدالة لفك تشفير الطبقات المشفرة
+def decrypt_function(encrypted_parts):
+    key = fetch_key_from_github()  # اجلب المفتاح من GitHub
+    decrypted_parts = []
 
-# إرسال الطلب
-response = requests.get(url, headers=headers)
+    # فك تشفير الطبقات (من الطبقة 3 إلى الطبقة 1)
+    for layer in range(3, 0, -1):
+        print(f"Decrypting layer {layer}...")
+        decrypted_layer = []
 
-# التحقق من النتيجة
-if response.status_code == 200:
-    print("File fetched successfully.")
-    print(response.text)  # عرض محتوى الملف
-else:
-    print(f"Failed to fetch file. Status code: {response.status_code}")
+        for part in encrypted_parts:
+            decoded_part = base64.b64decode(part).decode()  # فك Base64
+            decrypted_part = xor_decrypt(decoded_part, key)  # فك XOR
+            decrypted_layer.append(decrypted_part)
+
+        encrypted_parts = decrypted_layer
+
+    original_code = ''.join(encrypted_parts)  # اجمع النصوص الأصلية
+    print("Decryption completed successfully.")
+    return original_code
