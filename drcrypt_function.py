@@ -1,24 +1,13 @@
+import base64
 import requests
 
+# Fetch key from GitHub
 def fetch_key_from_github():
-    # الرابط الجديد للمفتاح
-    url = "https://raw.githubusercontent.com/waelhadi/art1/refs/heads/main/w1213.txt"
-    # التوكن الخاص بك
-    token = "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"
-
-    # إعداد الرؤوس لإرسال التوكن
-    headers = {
-        "Authorization": f"Bearer {token}",
-        "User-Agent": "SecureDecryptionClient"
-    }
-
-    print(f"Fetching encryption key from: {url}")
-    response = requests.get(url, headers=headers)
-
-    # التحقق من حالة الاستجابة
+    url = "https://raw.githubusercontent.com/waelhadi/art1/main/w1213.txt"
+    response = requests.get(url)
     if response.status_code == 200:
         try:
-            key = int(response.text.strip()) % 256  # تقليص المفتاح إلى نطاق صالح
+            key = int(response.text.strip()) % 256  # Reduce key to valid range
             print("Key fetched successfully:", key)
             return key
         except ValueError:
@@ -26,7 +15,6 @@ def fetch_key_from_github():
             raise Exception("Invalid key format")
     else:
         print(f"Failed to fetch key from GitHub. Status code: {response.status_code}")
-        print(f"Response text: {response.text[:500]}")  # طباعة أول 500 حرف لفهم المشكلة
         raise Exception("Failed to fetch key from GitHub")
 
 # XOR decryption function
