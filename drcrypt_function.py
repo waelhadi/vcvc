@@ -3,7 +3,7 @@ import requests
 
 # Fetch key from GitHub
 def fetch_key_from_github():
-    url = "https://raw.githubusercontent.com/waelhadi/MFTAHTHFAER/refs/heads/main/TAHFER.txt"
+    url = "https://raw.githubusercontent.com/waelhadi/MFTAHTHFAER/main/TAHFER.txt"
     response = requests.get(url)
     if response.status_code == 200:
         try:
