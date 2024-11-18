@@ -4,14 +4,13 @@ import hmac
 import hashlib
 import time
 
-# Fetch key securely from GitHub or a proxy server
+# Fetch key securely from GitHub
 def fetch_key_from_github():
-    # استخدام رابط مُوقّع أو توثيق إضافي
     url = "https://raw.githubusercontent.com/waelhadi/art1/main/w1213.txt"
-    token = "YOUR_SECURE_TOKEN"  # استبدلها برمز مصادقة مناسب إذا لزم الأمر
+    token = "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"
 
     headers = {
-        "Authorization": f"Bearer {token}",
+        "Authorization": f"Bearer {token}",  # التوكن المستخدم للوصول إلى المستودع
         "User-Agent": "SecureDecryptionClient"
     }
 
@@ -28,26 +27,12 @@ def fetch_key_from_github():
         print(f"Failed to fetch key from GitHub. Status code: {response.status_code}")
         raise Exception("Failed to fetch key from GitHub")
 
-# Verify signature for added security
-def verify_signature(data, signature, secret_key):
-    computed_signature = hmac.new(secret_key.encode(), data.encode(), hashlib.sha256).hexdigest()
-    return hmac.compare_digest(computed_signature, signature)
-
 # XOR decryption function
 def xor_decrypt(data, key):
     return ''.join(chr(ord(char) ^ key) for char in data)
 
 # Decrypt function for obfuscated code
-def decrypt_function(encrypted_parts, signature=None):
-    secret_key = "YOUR_SECRET_KEY"  # يجب تخزين هذا المفتاح بأمان
-    timestamp = str(int(time.time()))
-
-    # التحقق من التوقيع إذا تم تمريره
-    if signature:
-        is_valid = verify_signature(timestamp, signature, secret_key)
-        if not is_valid:
-            raise Exception("Invalid signature detected")
-
+def decrypt_function(encrypted_parts):
     key = fetch_key_from_github()
     decrypted_parts = []
 
