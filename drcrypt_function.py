@@ -25,6 +25,3 @@ def run_decrypted_code(decrypted_code):
         spec.loader.exec_module(module)
     finally:
         os.remove(temp_filename)
-
-if __name__ == "__main__":
-    print("دالة فك التشفير جاهزة.")
