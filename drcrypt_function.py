@@ -1,32 +1,30 @@
-import zlib
-import sys
+import json
+import tempfile
+import os
+import importlib.util
 
-def xor_decrypt(data, key):
-    """فك تشفير باستخدام XOR"""
-    return ''.join(chr(ord(c) ^ ord(key[i % len(key)])) for i, c in enumerate(data))
+def custom_symbol_decrypt(encrypted):
+    """فك التشفير باستخدام الرموز المخصصة"""
+    symbol = "■"  # نفس الرمز المستخدم في التشفير
+    decrypted = []
+    for enc_char in encrypted:
+        char_code = len(enc_char)
+        decrypted.append(chr(char_code))
+    return "".join(decrypted)
 
-def decompress_data(data):
-    """فك ضغط البيانات"""
+def run_decrypted_code(decrypted_code):
+    """تشغيل الكود المفكوك"""
+    with tempfile.NamedTemporaryFile(suffix=".py", delete=False) as temp_file:
+        temp_file.write(decrypted_code.encode())
+        temp_filename = temp_file.name
+
     try:
-        # التحقق من أن البيانات بتنسيق هيكساديسيمال
-        if not all(c in "0123456789abcdef" for c in data.lower()):
-            raise ValueError("البيانات ليست بتنسيق هيكساديسيمال صالح.")
-        return zlib.decompress(bytes.fromhex(data)).decode('utf-8')
-    except zlib.error as e:
-        print(f"خطأ أثناء فك ضغط البيانات: {e}")
-        raise
-    except ValueError as e:
-        print(f"خطأ في التنسيق: {e}")
-        raise
-
-def main():
-    # قراءة البيانات والمفتاح من سطر الأوامر
-    encrypted_data = sys.argv[1]
-    key = sys.argv[2]
-
-    # فك التشفير
-    decrypted = xor_decrypt(decompress_data(encrypted_data), key)
-    print("النص المفكوك:", decrypted)
+        # استيراد الكود وتنفيذه
+        spec = importlib.util.spec_from_file_location("decrypted_module", temp_filename)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+    finally:
+        os.remove(temp_filename)
 
 if __name__ == "__main__":
-    main()
+    print("دالة فك التشفير جاهزة.")
