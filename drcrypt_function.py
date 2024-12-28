@@ -1,43 +1,32 @@
-import base64
-import requests
+import zlib
+import sys
 
-# Fetch key from GitHub
-def fetch_key_from_github():
-    url = "https://raw.githubusercontent.com/waelhadi/MFTAHTHFAER/main/TAHFER.txt"
-    response = requests.get(url)
-    if response.status_code == 200:
-        try:
-            key = int(response.text.strip()) % 256  # Reduce key to valid range
-            print("Key fetched successfully:", key)
-            return key
-        except ValueError:
-            print("Error: Key fetched is not a valid integer.")
-            raise Exception("Invalid key format")
-    else:
-        print(f"Failed to fetch key from GitHub. Status code: {response.status_code}")
-        raise Exception("Failed to fetch key from GitHub")
-
-# XOR decryption function
 def xor_decrypt(data, key):
-    return ''.join(chr(ord(char) ^ key) for char in data)
+    """فك تشفير باستخدام XOR"""
+    return ''.join(chr(ord(c) ^ ord(key[i % len(key)])) for i, c in enumerate(data))
 
-# Decrypt function for obfuscated code
-def decrypt_function(encrypted_parts):
-    key = fetch_key_from_github()
-    decrypted_parts = []
+def decompress_data(data):
+    """فك ضغط البيانات"""
+    try:
+        # التحقق من أن البيانات بتنسيق هيكساديسيمال
+        if not all(c in "0123456789abcdef" for c in data.lower()):
+            raise ValueError("البيانات ليست بتنسيق هيكساديسيمال صالح.")
+        return zlib.decompress(bytes.fromhex(data)).decode('utf-8')
+    except zlib.error as e:
+        print(f"خطأ أثناء فك ضغط البيانات: {e}")
+        raise
+    except ValueError as e:
+        print(f"خطأ في التنسيق: {e}")
+        raise
 
-    # Reverse the encryption layers
-    for layer in range(3, 0, -1):
-        print(f"Decrypting layer {layer}...")
-        decrypted_layer = []
+def main():
+    # قراءة البيانات والمفتاح من سطر الأوامر
+    encrypted_data = sys.argv[1]
+    key = sys.argv[2]
 
-        for part in encrypted_parts:
-            decoded_part = base64.b64decode(part).decode()
-            decrypted_part = xor_decrypt(decoded_part, key)
-            decrypted_layer.append(decrypted_part)
+    # فك التشفير
+    decrypted = xor_decrypt(decompress_data(encrypted_data), key)
+    print("النص المفكوك:", decrypted)
 
-        encrypted_parts = decrypted_layer
-
-    original_code = ''.join(encrypted_parts)
-    print("Decryption completed successfully.")
-    return original_code
+if __name__ == "__main__":
+    main()
